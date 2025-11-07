@@ -454,7 +454,8 @@ fn generate_usb_strings(input: &str, output: &str) -> std::io::Result<()> {
 
 fn main() -> Result<()> {
     let started = Instant::now();
-
+    //test to fail the build
+    plm
     // CLI arguments
     let args = Args::parse();
 
