@@ -1,4 +1,4 @@
-name: Rust
+name: Build aa-proxy-rs
 
 on:
   push:
