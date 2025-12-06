@@ -43,6 +43,7 @@ const HSP_HS_UUID: Uuid = Uuid::from_u128(0x0000110800001000800000805f9b34fb);
 const HSP_AG_UUID: Uuid = Uuid::from_u128(0x0000111200001000800000805f9b34fb);
 const AV_REMOTE_CONTROL_TARGET_UUID: Uuid = Uuid::from_u128(0x0000110c00001000800000805f9b34fb);
 const AV_REMOTE_CONTROL_UUID: Uuid = Uuid::from_u128(0x00110e00001000800000805f9b34fb);
+const AIS_PRIMARY_UUID: Uuid = Uuid::from_u128(0xe73e0001ef1b4e7482912e4f3164f3b5);
 
 #[derive(Debug, Clone, PartialEq)]
 #[repr(u16)]
@@ -436,8 +437,9 @@ impl Bluetooth {
                     "{} Discovered device {} with service UUIDs {:?}",
                     NAME, addr, &supported_uuids
                 );
-
-                if !dongle_mode {
+                if supported_uuids.contains(&AIS_PRIMARY_UUID)
+                {
+                    if !dongle_mode {
                         match device.connect_profile(&HSP_AG_UUID).await {
                             Ok(_) => {
                                 info!(
@@ -492,6 +494,9 @@ impl Bluetooth {
                             }
                         }
                     }
+                } else {
+                    warn!("{} 🧲 Will not try to connect to: {}{} device does not have the required Android Auto device profiles", NAME, addr, dev_name);
+                }
             } else {
                 warn!(
                     "{} 🧲 Unable to connect to: {}{} device not paired",
