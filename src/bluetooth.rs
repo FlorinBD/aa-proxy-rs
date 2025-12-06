@@ -437,10 +437,7 @@ impl Bluetooth {
                     NAME, addr, &supported_uuids
                 );
 
-                if supported_uuids.contains(&AV_REMOTE_CONTROL_TARGET_UUID)
-                    && supported_uuids.contains(&AV_REMOTE_CONTROL_UUID)
-                {
-                    if !dongle_mode {
+                if !dongle_mode {
                         match device.connect_profile(&HSP_AG_UUID).await {
                             Ok(_) => {
                                 info!(
@@ -495,9 +492,6 @@ impl Bluetooth {
                             }
                         }
                     }
-                } else {
-                    warn!("{} 🧲 Will not try to connect to: {}{} device does not have the required Android Auto device profiles", NAME, addr, dev_name);
-                }
             } else {
                 warn!(
                     "{} 🧲 Unable to connect to: {}{} device not paired",
