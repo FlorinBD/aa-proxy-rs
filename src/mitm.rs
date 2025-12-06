@@ -61,6 +61,10 @@ pub const ENCRYPTED: u8 = 1 << 3;
 // location for hu_/md_ private keys and certificates:
 const KEYS_PATH: &str = "/etc/aa-proxy-rs";
 
+// DHU string consts for developer mode
+pub const DHU_MAKE: &str = "Google";
+pub const DHU_MODEL: &str = "Desktop Head Unit";
+
 pub struct ModifyContext {
     sensor_channel: Option<u8>,
     nav_channel: Option<u8>,
@@ -580,8 +584,16 @@ pub async fn pkt_modify_hook(
 
             // enabling developer mode
             if cfg.developer_mode {
-                msg.set_make("Google".into());
-                msg.set_model("Desktop Head Unit".into());
+                msg.set_make(DHU_MAKE.into());
+                msg.set_model(DHU_MODEL.into());
+                msg.set_head_unit_make(DHU_MAKE.into());
+                msg.set_head_unit_model(DHU_MODEL.into());
+                if let Some(info) = msg.headunit_info.as_mut() {
+                    info.set_make(DHU_MAKE.into());
+                    info.set_model(DHU_MODEL.into());
+                    info.set_head_unit_make(DHU_MAKE.into());
+                    info.set_head_unit_model(DHU_MODEL.into());
+                }
                 info!(
                     "{} <yellow>{:?}</>: enabling developer mode",
                     get_name(proxy_type),
@@ -839,6 +851,9 @@ pub async fn proxy<A: Endpoint<A> + 'static>(
             tokio::select! {
             // handling data from opposite device's thread, which needs to be transmitted
             Some(pkt) = rx.recv() => {
+                debug!("{} rx.recv", get_name(proxy_type));
+                let _ = pkt_debug(proxy_type, HexdumpLevel::RawOutput, hex_requested, &pkt).await;
+
                 pkt.transmit(&mut device)
                     .await
                     .with_context(|| format!("proxy/{}: transmit failed", get_name(proxy_type)))?;
@@ -850,6 +865,9 @@ pub async fn proxy<A: Endpoint<A> + 'static>(
 
             // handling input data from the reader thread
             Some(pkt) = rxr.recv() => {
+                debug!("{} rxr.recv", get_name(proxy_type));
+                let _ = pkt_debug(proxy_type, HexdumpLevel::RawOutput, hex_requested, &pkt).await;
+
                 tx.send(pkt).await?;
             }
             }

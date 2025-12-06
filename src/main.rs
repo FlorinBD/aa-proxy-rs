@@ -310,6 +310,7 @@ async fn tokio_main(
                     cfg.action_requested == Some(Action::Stop),
                     cfg.quick_reconnect,
                     restart_tx.subscribe(),
+                    restart_tx.clone(),
                     profile_connected.clone(),
                 )
                 .await
@@ -583,7 +584,6 @@ fn main() -> Result<()> {
         config,
         tx,
         sensor_channel,
-        profile_connected,
     ));
 
     info!(
