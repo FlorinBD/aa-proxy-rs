@@ -437,8 +437,8 @@ impl Bluetooth {
                     "{} Discovered device {} with service UUIDs {:?}",
                     NAME, addr, &supported_uuids
                 );
-                if supported_uuids.contains(&AIS_PRIMARY_UUID)
-                {
+                //if supported_uuids.contains(&AIS_PRIMARY_UUID)
+                //{
                     if !dongle_mode {
                         match device.connect_profile(&HSP_AG_UUID).await {
                             Ok(_) => {
@@ -494,9 +494,9 @@ impl Bluetooth {
                             }
                         }
                     }
-                } else {
-                    warn!("{} 🧲 Will not try to connect to: {}{} device does not have the required Android Auto device profiles", NAME, addr, dev_name);
-                }
+                //} else {
+                    //warn!("{} 🧲 Will not try to connect to: {}{} device does not have the required Android Auto device profiles", NAME, addr, dev_name);
+                //}
             } else {
                 warn!(
                     "{} 🧲 Unable to connect to: {}{} device not paired",
